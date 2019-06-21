@@ -6,11 +6,10 @@ tags: "tools Jenkins SDK Integration Java"
 
 [Jenkins](https://jenkins.io/) is a continuous integration (CI) application that can be used to build, deploy and run applications. The Contrast Jenkins Plugin is a tool for integrating Contrast with your Jenkins CI instance. You can use it to test your connection to Contrast and verify your build with threshold conditions.
 
-## Use the Plugin
 
-You can view the plugin code in Jenkins' [Github repository](https://github.com/jenkinsci/contrast-continuous-application-security-plugin). In the Jenkins dashboard, go to **Manage Jenkins** in the left sidebar, and select the **Configure System** page to find the "Contrast TeamServer" profiles section.
-
-### Contrast API settings
+## Configuring Jenkins
+### Global settings
+In the Jenkins dashboard, go to **Manage Jenkins** in the left sidebar, and select the **Configure System** page to find the "Contrast TeamServer" profiles section.
 
 Contrast API settings enable the plugin to connect to Contrast and query for results. The plugin leverages these result to authenticate to Contrast and make API calls in post-build actions. Among the following requirements, you'll need a unique profile name to identify your configuration and use it in a specific job.
 
@@ -26,13 +25,8 @@ Contrast API settings enable the plugin to connect to Contrast and query for res
 section for more details.)
 * Click the **Apply** button to save the profile settings.
 
-#### Test the connection
-
+#### Global threshold conditions
 When you add a Contrast profile, use the **Test TeamServer Connection** button to test your connection and make sure that all the fields are accurate. Contrast prompts you if the test is successful, or gives an error message if it fails.
-
-### Global threshold conditions
-
-Once a connection is made, complete the following fields for **Contrast Vulnerability Threshold Conditions**. 
 
 * Select a **Profile** from the dropdown.
 * Add a **Count**. The count is exclusive; if you set a count for "5", it fails on six or more vulnerabilities. This field is **required**.
@@ -46,8 +40,8 @@ You can add as many rules as you like. The plugin fails on the **first** bad con
 
 >**Note**: Even if your build succeeds, the plugin fails the overall build if the test finds a bad condition.
 
-### Threshold conditions in a post-build action
 
+### Using Contrast in freestyle jobs
 Complete the following fields for **Post-Build Actions**.
 
 * Select a **Profile** from the dropdown.
@@ -59,8 +53,9 @@ Complete the following fields for **Post-Build Actions**.
 
 <a href="assets/images/Jenkins_threshold_condition.png" rel="lightbox" title="Threshold condition configuration"><img class="thumbnail" src="assets/images/Jenkins_threshold_condition.png"/></a>
 
-### Threshold conditions in a Pipeline step
 
+
+### Using Contrast in pipeline jobs
 When you add a Pipeline step with the name `contrastVerification`, it follows the same principles as the post-build action but in a newer format for Jenkins 2.0 improvements. Pipeline configuration:
 
 ```
@@ -81,3 +76,10 @@ The plugin can use either the unique identifier `appVersionTag` or the `startDat
 > **Note:** The `queryBy` option should match the `contrast.override.appversion` parameter you pass to the Contrast Java agent when running your application. If you use the third option (`startDate`), you aren't required to pass the `contrast.override.appversion` parameter to the Java agent.
 
 Both `JOB_NAME` and `BUILD_NUMBER` are available as a Jenkins environment <a href="https://wiki.jenkins-ci.org/display/JENKINS/Building+a+software+project">properties</a>. You can specify your own text for APPVERSIONTAG by selecting the fourth queryBy option and exporting APPVERSIONTAG as an environment property within your Jenkins job.
+
+
+
+## Contribute to the plugin
+
+You can view the plugin code in Jenkins' [Github repository](https://github.com/jenkinsci/contrast-continuous-application-security-plugin). 
+
