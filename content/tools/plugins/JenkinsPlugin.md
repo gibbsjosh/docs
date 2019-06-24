@@ -4,7 +4,22 @@ description: "Sample Jenkins plugin using the Contrast Java SDK"
 tags: "tools Jenkins SDK Integration Java"
 -->
 
-[Jenkins](https://jenkins.io/) is a continuous integration (CI) application that can be used to build, deploy and run applications. The Contrast Jenkins Plugin is a tool for integrating Contrast with your Jenkins CI instance. You can use it to test your connection to Contrast and verify your build with threshold conditions.
+[Jenkins](https://jenkins.io/) is a continuous integration (CI) system that can be used to build, deploy and run applications. The Contrast Jenkins Plugin allows you to report vulnerabilities as part of your build results. This can be especially helpful when setting up gated deployments such as in pull request (PR) build jobs.
+
+## How it works
+
+The Contrast agent communicates with the Contrast Jenkins plugin by way of TeamServer. When the Contrast agent sends vulnerability data to TeamServer, it can include build information like the job name, build number, or application version. Later, when a build completes, the Contrast Jenkins plugin checks to see how many vulnerabilities have been reported to TeamServer for a given application. If the number of vulnerabilities exceeds the threshold you've set, the plugin fails the build. From start to finish, these steps are:
+
+1. Jenkins builds and deploys the application to be tested.
+1. The application starts with the Contrast agent instrumenting requests.
+1. Tests exercise the application.
+1. The Contrast agent reports vulnerabilities to TeamServer.
+1. The Contrast Jenkins Plugin queries TeamServer to retrieve application vulnerabilities
+1. The Contrast Jenkins Plugin fails the Jenkins build if more vulnerabilities are found than threshold you've defined.
+
+By default, the Contrast Jenkins plugin will query TeamServer for vulnerabilities reported after the time when the Jenkins job began. This is useful in environments where only one version of an application is running at a time.
+
+If you're testing more than one version of the application at the same time, querying vulnerabilities by time reported will cause the Contrast plugin to retrieve vulnerabilities from other running builds. To query only the vulnerabilities for a specific version of the application, the Contrast Jenkins plugin allows you to specify application version tags. You can use one of the pre-defined tag formats or provide your own tag.
 
 
 ## Configuring Jenkins
@@ -80,6 +95,5 @@ Both `JOB_NAME` and `BUILD_NUMBER` are available as a Jenkins environment <a hre
 
 
 ## Contribute to the plugin
-
-You can view the plugin code in Jenkins' [Github repository](https://github.com/jenkinsci/contrast-continuous-application-security-plugin). 
+The Contrast Jenkins plugin is open source and hosted on [Github](https://github.com/jenkinsci/contrast-continuous-application-security-plugin). Pull requests are welcome!
 
