@@ -1,35 +1,60 @@
 <!--
-title: "Route Coverage"
-description: "Overview of setting up environments"
+title: "Route Intelligence"
+description: "Understand how vulnerabilities map to your app's attack surface"
 tags: "user UI applications route coverage exercised vulnerabilities"
 -->
 
-## About Route Coverage
+## Background
 
-Contrast observes the flow of data through routes in each of your applications. An application “route” is a combination of three distinct data points: the URL of the route, the HTTP verb associated with the request (e.g., Get or Post), and a unique signature based on that route's controller action. With Contrast's route coverage, you can see detailed information on the components of your application - such as which routes have been exercised versus which ones have not - and decide where to focus your testing efforts. 
+Web requests are the primary interface of web applications. A request may be handled by one function with many subsequent functions coordinating interactions with other services, databases, or files. During the request handling process, Contrast monitors data flows across the application to identify vulnerabilities. It is not unusual for a single web request to be vulnerable to multiple types of attacks. Contrast can associate these vulnerabilities with the original request using a feature called Route Intelligence.
 
-> **Hint:** When you consistently exercise each route in your application, the Contrast agent can successfully Assess and Protect the surface layer of your application, and discover vulnerabilities. 
+Let's look at an example request.
 
-### Agent configuration 
+```
+GET /users?active=true
+Host: example.com
+Accept: application/json
+```
 
-Contrast supports route coverage for the following frameworks: 
+This request could be handled by a function such as:
 
-* **Java:** Jersey 2, Spring MVC 4, Struts 1, and Struts 2
-* **.NET:** ASP.NET MVC (versions 4 and 5), WebForms, WebAPI and WCF
-* **.NET Core:** ASP.NET Core MVC (versions 2.1, 2.2, 3.0 and 3.1) and ASP.NET Core Razor Pages (versions 2.1, 2.2, 3.0 and 3.1)
+```
+@Controller
+public class UserController {
+    @GetMapping("/users")
+    public String users(@RequestParam(name="active", required=false, defaultValue=true) Bool active) {
+        ...
+    }
+}
+```
+
+An application route is a combination of three parts: an HTTP verb (`GET` in this example), the resource path (`/users`), and the method signature of the controller (`UserController.users(Bool active)`). With Contrast's route coverage, you can see detailed information on the components of your application such as which routes have been exercised versus which ones have not. This insight can help guide decisions like where to focus your testing efforts.
+
+## How Contrast identifies routes in your application
+
+When the Contrast agent starts, it instruments functions in the application so that web requests can be assessed for vulnerabilities while the application is running. If a function implements a framework to handle web requests, Contrast can identify the route before a request is handled. These routes are labeled **discovered** within Contrast.
+
+When your application is handling a request, Contrast tracks the activity as an **observed** route.
+
+Contrast supports route discovery for these frameworks: 
+
+* **Java:** Jersey 2, Spring MVC 4, Struts 1 and Struts 2
+* **.Net Core:** ASP.NET Core MVC (versions 2.1, 2.2, 3.0 and 3.1) and ASP.NET Core Razor Pages (versions 2.1, 2.2, 3.0 and 3.1)
+* **.Net Framework:** ASP.NET MVC (versions 4 and 5), WebForms, WebAPI and WCF
 * **Node:** Express, Hapi 17+, Koa and Kraken
-* **Ruby:** Rails and Sinatra
 * **Python:** Django, Pyramid and Flask
+* **Ruby:** Rails and Sinatra
 
-For supported frameworks, route coverage consists of two parts:  
 
-* **Discovered** routes: the full list of routes that Contrast has detected in an application 
-* **Observed** routes: the routes in which Contrast has detected traffic
+> **Note:** The Java and Node agents only report routes from supported frameworks. The Java agent also requires the option `-Dcontrast.agent.java.standalone_app_name=<example_name>` be defined in the agent configuration.
 
-While coverage is enabled automatically for most Contrast agents, you must use the following property to specify the application name when deploying the **Java** agent: `-Dcontrast.agent.java.standalone_app_name=<example_name>`. If you don't include this property, the Java agent will only observe - but not discover - routes in your application.
+### What if the framework I'm using isn't supported?
 
-> **Note:** The **Java** and **Node** agents only report coverage information for the specifically instrumented frameworks listed above. For **unsupported frameworks**, neither agent displays any routes.
+Let Contrast Support know! Your feeback makes Contrast better. Contrast will attempt to infer the routes based on observed requests, but you will not see any routes discovered within Contrast.
 
+### What if I add or remove a route from my application?
+
+Discuss agent sessions here.
 
 ## View Route Details 
 
